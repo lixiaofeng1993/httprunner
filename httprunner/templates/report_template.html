@@ -149,54 +149,54 @@
 </head>
 
 <body>
-  <h1>Test Report: {{html_report_name}}</h1>
+  <h1>测试报告: {{html_report_name}}</h1>
 
-  <h2>Summary</h2>
+  <h2>报告汇总</h2>
   <table id="summary">
     <tr>
-      <th>START AT</th>
+      <th>开始时间</th>
       <td colspan="4">{{time.start_datetime}}</td>
     </tr>
     <tr>
-      <th>DURATION</th>
+      <th>持续时间</th>
       <td colspan="4">{{ '%0.3f'| format(time.duration|float) }} seconds</td>
     </tr>
     <tr>
-      <th>PLATFORM</th>
+      <th>运行环境</th>
       <td>HttpRunner {{ platform.httprunner_version }} </td>
       <td>{{ platform.python_version }} </td>
       <td colspan="2">{{ platform.platform }}</td>
     </tr>
     <tr>
-      <th>STAT</th>
-      <th colspan="2">TESTCASES (success/fail)</th>
-      <th colspan="2">TESTSTEPS (success/fail/error/skip)</th>
+      <th>状态</th>
+      <th colspan="2">测试用例 (成功/失败)</th>
+      <th colspan="2">测试步骤 (成功/失败/错误/跳过)</th>
     </tr>
     <tr>
-      <td>total (details) =></td>
+      <td>运行总计 =></td>
       <td colspan="2">{{stat.testcases.total}} ({{stat.testcases.success}}/{{stat.testcases.fail}})</td>
       <td colspan="2">{{stat.teststeps.total}} ({{stat.teststeps.successes}}/{{stat.teststeps.failures}}/{{stat.teststeps.errors}}/{{stat.teststeps.skipped}})</td>
     </tr>
   </table>
 
-  <h2>Details</h2>
+  <h2>详细数据</h2>
 
   {% for test_suite_summary in details %}
   {% set suite_index = loop.index %}
   <h3>{{test_suite_summary.name}}</h3>
   <table id="suite_{{suite_index}}" class="details">
     <tr>
-      <td>TOTAL: {{test_suite_summary.stat.total}}</td>
-      <td>SUCCESS: {{test_suite_summary.stat.successes}}</td>
-      <td>FAILED: {{test_suite_summary.stat.failures}}</td>
-      <td>ERROR: {{test_suite_summary.stat.errors}}</td>
-      <td>SKIPPED: {{test_suite_summary.stat.skipped}}</td>
+      <td>总计: {{test_suite_summary.stat.total}}</td>
+      <td>成功: {{test_suite_summary.stat.successes}}</td>
+      <td>失败: {{test_suite_summary.stat.failures}}</td>
+      <td>错误: {{test_suite_summary.stat.errors}}</td>
+      <td>跳过: {{test_suite_summary.stat.skipped}}</td>
     </tr>
     <tr>
-      <th>Status</th>
-      <th colspan="2">Name</th>
-      <th>Response Time</th>
-      <th>Detail</th>
+      <th>状态</th>
+      <th colspan="2">名称</th>
+      <th>响应时间</th>
+      <th>详情</th>
     </tr>
 
     {% for record in test_suite_summary.records %}
@@ -213,11 +213,11 @@
         <a class="button" href="#popup_log_{{meta_data_index}}">log-{{loop.index}}</a>
         <div id="popup_log_{{meta_data_index}}" class="overlay">
           <div class="popup">
-            <h2>Request and Response data</h2>
-            <a class="close" href="#record_{{meta_data_index}}">&times;</a>
+            <h2>请求和响应数据</h2>
+            <a class="close" href="#record">&times;</a>
 
             <div class="content">
-              <h3>Name: {{ meta_data.name }}</h3>
+              <h3>名称: {{ meta_data.name }}</h3>
 
               {% for req_resp in meta_data.data %}
 
@@ -225,7 +225,7 @@
               <div class="separator">==================================== redirect to ====================================</div>
               {% endif %}
 
-              <h3>Request:</h3>
+              <h3>请求数据:</h3>
               <div style="overflow: auto">
                 <table>
                   {% for key, value in req_resp.request.items() %}
@@ -247,7 +247,7 @@
                 </table>
               </div>
 
-              <h3>Response:</h3>
+              <h3>响应数据:</h3>
               <div style="overflow: auto">
                 <table>
                     {% for key, value in req_resp.response.items() %}
@@ -278,14 +278,14 @@
               </div>
               {% endfor %}
 
-              <h3>Validators:</h3>
+              <h3>断言结果:</h3>
               <div style="overflow: auto">
                   <table>
                     <tr>
-                      <th>check</th>
-                      <th>comparator</th>
-                      <th>expect value</th>
-                      <th>actual value</th>
+                      <th>检查字段</th>
+                      <th>比较器</th>
+                      <th>期望值</th>
+                      <th>实际值</th>
                     </tr>
                     {% for validator in meta_data.validators %}
                     <tr>
@@ -306,19 +306,19 @@
                   </table>
               </div>
 
-              <h3>Statistics:</h3>
+              <h3>统计:</h3>
               <div style="overflow: auto">
                 <table>
                   <tr>
-                      <th>content_size(bytes)</th>
+                      <th>内容大小(bytes)</th>
                       <td>{{ meta_data.stat.content_size }}</td>
                     </tr>
                   <tr>
-                    <th>response_time(ms)</th>
+                    <th>响应时间(ms)</th>
                     <td>{{ meta_data.stat.response_time_ms }}</td>
                   </tr>
                   <tr>
-                    <th>elapsed(ms)</th>
+                    <th>消耗时间(ms)</th>
                     <td>{{ meta_data.stat.elapsed_ms }}</td>
                   </tr>
                 </table>
@@ -334,7 +334,7 @@
           <div id="popup_attachment_{{record_index}}" class="overlay">
             <div class="popup">
               <h2>Traceback Message</h2>
-              <a class="close" href="#record_{{record_index}}">&times;</a>
+              <a class="close" href="#record">&times;</a>
               <div class="content"><pre>{{ record.attachment | e }}</pre></div>
             </div>
           </div>
