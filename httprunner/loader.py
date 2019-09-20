@@ -17,6 +17,7 @@ try:
 except AttributeError:
     pass
 
+
 ###############################################################################
 ##   file loader
 ###############################################################################
@@ -220,13 +221,13 @@ def locate_file(start_path, file_name):
 
     """
     if os.path.isfile(start_path):
-        start_dir_path = os.path.dirname(start_path)
+        start_dir_path = os.path.dirname(start_path)  # 返回文件路径
     elif os.path.isdir(start_path):
         start_dir_path = start_path
     else:
         raise exceptions.FileNotFound("invalid path: {}".format(start_path))
 
-    file_path = os.path.join(start_dir_path, file_name)
+    file_path = os.path.join(start_dir_path, file_name)  # debugtalk.py 路径
     if os.path.isfile(file_path):
         return os.path.abspath(file_path)
 
@@ -262,7 +263,6 @@ def load_module_functions(module):
     for name, item in vars(module).items():
         if validator.is_function(item):
             module_functions[name] = item
-
     return module_functions
 
 
@@ -494,7 +494,7 @@ def load_testcase_v2(raw_testcase):
     raw_testcase["teststeps"] = [
         load_teststep(teststep)
         for teststep in raw_teststeps
-    ]
+        ]
     return raw_testcase
 
 
@@ -753,7 +753,7 @@ def locate_debugtalk_py(start_path):
     """
     try:
         # locate debugtalk.py file.
-        debugtalk_path = locate_file(start_path, "debugtalk.py")
+        debugtalk_path = locate_file(start_path, "debugtalk.py")  # debugtalk.py 绝对路径
     except exceptions.FileNotFound:
         debugtalk_path = None
 
@@ -777,13 +777,13 @@ def load_project_tests(test_path, dot_env_path=None):
 
     if debugtalk_path:
         # The folder contains debugtalk.py will be treated as PWD.
-        project_working_directory = os.path.dirname(debugtalk_path)
+        project_working_directory = os.path.dirname(debugtalk_path)  # debugtalk.py 所在的路径
     else:
         # debugtalk.py not found, use os.getcwd() as PWD.
         project_working_directory = os.getcwd()
 
     # add PWD to sys.path
-    sys.path.insert(0, project_working_directory)
+    sys.path.insert(0, project_working_directory)  # 优先被import
 
     # load .env file
     # NOTICE:
@@ -802,10 +802,10 @@ def load_project_tests(test_path, dot_env_path=None):
 
     project_mapping["PWD"] = project_working_directory
     built_in.PWD = project_working_directory
-    project_mapping["functions"] = debugtalk_functions
+    project_mapping["functions"] = debugtalk_functions  # debugtalk.py 中的所有函数
 
     # load api
-    tests_def_mapping["api"] = load_api_folder(os.path.join(project_working_directory, "api"))
+    tests_def_mapping["api"] = load_api_folder(os.path.join(project_working_directory, "api"))  # 返回api目录下所有的接口数据
     tests_def_mapping["PWD"] = project_working_directory
 
 
@@ -867,7 +867,7 @@ def load_tests(path, dot_env_path=None):
         logger.log_error(err_msg)
         raise exceptions.FileNotFound(err_msg)
 
-    if not os.path.isabs(path):
+    if not os.path.isabs(path):  # 是不是绝对路径
         path = os.path.join(os.getcwd(), path)
 
     load_project_tests(path, dot_env_path)

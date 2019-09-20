@@ -8,21 +8,20 @@ from httprunner import (__version__, exceptions, loader, logger, parser,
 
 
 class HttpRunner(object):
-
     def __init__(self, failfast=False, save_tests=False, report_template=None, report_dir=None,
-        log_level="INFO", log_file=None):
+                 log_level="INFO", log_file=None):
         """ initialize HttpRunner.
 
         Args:
-            failfast (bool): stop the test run on the first error or failure.
-            save_tests (bool): save loaded/parsed tests to JSON file.
-            report_template (str): report template file path, template should be in Jinja2 format.
-            report_dir (str): html report save directory.
-            log_level (str): logging level.
-            log_file (str): log file path.
+            failfast (bool): 在第一个错误或者失败时，停止测试运行.
+            save_tests (bool): 将加载/解析的测试保存到json文件.
+            report_template (str): 报表模板文件路径，模板应为jinja2格式.
+            report_dir (str): html报告保存目录.
+            log_level (str): 日志等级.
+            log_file (str): 日志文件路径.
 
         """
-        logger.setup_logger(log_level, log_file)
+        logger.setup_logger(log_level, log_file)  # 调用日志函数，参数 日志等级和日志文件路径
         logger.log_info("HttpRunner version: {}".format(__version__))
 
         self.exception_stage = "initialize HttpRunner()"
@@ -30,8 +29,8 @@ class HttpRunner(object):
             "failfast": failfast,
             "resultclass": report.HtmlTestResult
         }
-        self.unittest_runner = unittest.TextTestRunner(**kwargs)
-        self.test_loader = unittest.TestLoader()
+        self.unittest_runner = unittest.TextTestRunner(**kwargs)  # 实例化 TextTestRunner
+        self.test_loader = unittest.TestLoader()  # 实例化 TestLoader
         self.save_tests = save_tests
         self.report_template = report_template
         self.report_dir = report_dir
@@ -47,9 +46,11 @@ class HttpRunner(object):
             unittest.TestSuite()
 
         """
+
         def _add_test(test_runner, test_dict):
             """ add test to testcase.
             """
+
             def test(self):
                 try:
                     test_runner.run_test(test_dict)
@@ -239,7 +240,7 @@ class HttpRunner(object):
         return [
             summary["in_out"]
             for summary in self._summary["details"]
-        ]
+            ]
 
     def run_path(self, path, dot_env_path=None, mapping=None):
         """ run testcase/testsuite file or folder.
@@ -272,7 +273,7 @@ class HttpRunner(object):
                 dict: valid testcase/testsuite data
 
         """
-        if validator.is_testcase_path(path_or_tests):
+        if validator.is_testcase_path(path_or_tests): # 参数 list or str ，判断路径是否存在
             return self.run_path(path_or_tests, dot_env_path, mapping)
         elif validator.is_testcases(path_or_tests):
             return self.run_tests(path_or_tests)
