@@ -293,7 +293,7 @@ def load_debugtalk_functions():
 ##   testcase loader
 ###############################################################################
 
-project_mapping = {}
+project_mapping = {}  # debugtalk.py中函数名称和对象字典
 tests_def_mapping = {
     "PWD": None,
     "api": {},
@@ -644,7 +644,7 @@ def load_test_file(path):
         # invalid format
         raise exceptions.FileFormatError("Invalid test file format!")
 
-    return loaded_content
+    return loaded_content  # 返回要执行的接口json，添加 path、 type 属性
 
 
 def load_folder_content(folder_path):
@@ -872,7 +872,7 @@ def load_tests(path, dot_env_path=None):
 
     load_project_tests(path, dot_env_path)
     tests_mapping = {
-        "project_mapping": project_mapping
+        "project_mapping": project_mapping  # 添加函数字典
     }
 
     def __load_file_content(path):
@@ -898,4 +898,4 @@ def load_tests(path, dot_env_path=None):
     elif os.path.isfile(path):
         __load_file_content(path)
 
-    return tests_mapping
+    return tests_mapping  # 函数、接口json数据字典

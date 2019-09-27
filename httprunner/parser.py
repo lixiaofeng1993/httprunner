@@ -11,7 +11,7 @@ from httprunner.compat import basestring, builtin_str, numeric_types, str
 # use $$ to escape $ notation
 dolloar_regex_compile = re.compile(r"\$\$")
 # variable notation, e.g. ${var} or $var
-variable_regex_compile = re.compile(r"\$\{(\w+)\}|\$(\w+)")
+variable_regex_compile = re.compile(r"\$\{(\w+)\}|\$(\w+)")  # 提取变量
 # function notation, e.g. ${func1($var_1, $var_3)}
 function_regex_compile = re.compile(r"\$\{(\w+)\(([\$\w\.\-/\s=,]*)\)\}")
 
@@ -339,6 +339,7 @@ def parse_function_params(params):
 class LazyFunction(object):
     """ call function lazily.
     """
+
     def __init__(self, function_meta, functions_mapping=None, check_variables_set=None):
         """ init LazyFunction object with function_meta
 
@@ -405,7 +406,7 @@ class LazyFunction(object):
             str_kwargs = [
                 "{}={}".format(key, str(value))
                 for key, value in self._kwargs.items()
-            ]
+                ]
             args_string += ", ".join(str_kwargs)
 
         return "LazyFunction({}({}))".format(self.func_name, args_string)
@@ -432,6 +433,7 @@ cached_functions_mapping = {}
 class LazyString(object):
     """ evaluate string lazily.
     """
+
     def __init__(self, raw_string, functions_mapping=None, check_variables_set=None, cached=False):
         """ make raw_string as lazy object with functions_mapping
             check if any variable undefined in check_variables_set
@@ -460,7 +462,7 @@ class LazyString(object):
             return origin_string.replace("{", "{{").replace("}", "}}")
 
         try:
-            match_start_position = raw_string.index("$", 0)
+            match_start_position = raw_string.index("$", 0)  # 字符串中包含 $ 的索引位置
             begin_string = raw_string[0:match_start_position]
             self._string = escape_braces(begin_string)
         except ValueError:
@@ -485,6 +487,7 @@ class LazyString(object):
                 function_meta = {
                     "func_name": func_match.group(1)
                 }
+
                 function_meta.update(parse_function_params(func_match.group(2)))
                 lazy_func = LazyFunction(
                     function_meta,
@@ -512,7 +515,7 @@ class LazyString(object):
             curr_position = match_start_position
             try:
                 # find next $ location
-                match_start_position = raw_string.index("$", curr_position+1)
+                match_start_position = raw_string.index("$", curr_position + 1)
                 remain_string = raw_string[curr_position:match_start_position]
             except ValueError:
                 remain_string = raw_string[curr_position:]
@@ -570,7 +573,7 @@ def prepare_lazy_data(content, functions_mapping=None, check_variables_set=None,
                 cached
             )
             for item in content
-        ]
+            ]
 
     elif isinstance(content, dict):
         parsed_content = {}
@@ -623,7 +626,7 @@ def parse_lazy_data(content, variables_mapping=None):
         return [
             parse_lazy_data(item, variables_mapping)
             for item in content
-        ]
+            ]
 
     elif isinstance(content, dict):
         parsed_content = {}
@@ -714,7 +717,7 @@ def parse_variables_mapping(variables_mapping):
                     key: variables_mapping[key]
                     for key in variables_mapping
                     if key not in parsed_variables_mapping
-                }
+                    }
                 raise exceptions.VariableNotFound(not_found_variables)
 
             if var_name in parsed_variables_mapping:
@@ -789,7 +792,7 @@ def _extend_with_api(test_dict, api_def_dict):
     def_validators = [
         validator.uniform_validator(_validator)
         for _validator in def_raw_validators
-    ]
+        ]
     ref_validators = test_dict.pop("validate", [])
     test_dict["validate"] = validator.extend_validators(
         def_validators,
@@ -856,8 +859,8 @@ def _extend_with_testcase(test_dict, testcase_def_dict):
 
     # override name
     test_name = test_dict.pop("name", None) \
-        or testcase_def_dict["config"].pop("name", None) \
-        or "testcase name undefined"
+                or testcase_def_dict["config"].pop("name", None) \
+                or "testcase name undefined"
 
     # override testcase config name, output, etc.
     testcase_def_dict["config"].update(test_dict)
@@ -872,8 +875,8 @@ def __prepare_config(config, project_mapping, session_variables_set=None):
     """
     # get config variables
     raw_config_variables = config.pop("variables", {})
-    raw_config_variables_mapping = utils.ensure_mapping_format(raw_config_variables)
-    override_variables = utils.deepcopy_dict(project_mapping.get("variables", {}))
+    raw_config_variables_mapping = utils.ensure_mapping_format(raw_config_variables)  # 检查变量格式
+    override_variables = utils.deepcopy_dict(project_mapping.get("variables", {}))  # deepcopy字典
     functions = project_mapping.get("functions", {})
 
     # override config variables with passed in variables
@@ -883,7 +886,8 @@ def __prepare_config(config, project_mapping, session_variables_set=None):
         config["variables"] = raw_config_variables_mapping
 
     check_variables_set = set(raw_config_variables_mapping.keys())
-    check_variables_set |= (session_variables_set or set())
+    check_variables_set |= (
+        session_variables_set or set())  # check_variables_set = check_variables_set | (session_variables_set or set()) True False  取True，都是False 取Fasle
     prepared_config = prepare_lazy_data(config, functions, check_variables_set, cached=True)
     return prepared_config
 
@@ -936,7 +940,7 @@ def __prepare_testcase_tests(tests, config, project_mapping, session_variables_s
             test_dict["validate"] = [
                 validator.uniform_validator(_validator)
                 for _validator in ref_raw_validators
-            ]
+                ]
 
         if "testcase_def" in test_dict:
             # test_dict is nested testcase
@@ -1154,7 +1158,7 @@ def __get_parsed_testsuite_testcases(testcases, testsuite_config, project_mappin
 
 
 def _parse_testsuite(testsuite, project_mapping):
-    testsuite.setdefault("config", {})
+    testsuite.setdefault("config", {})  # 如果键不在字典中，就设置默认值
     prepared_config = __prepare_config(testsuite["config"], project_mapping)
     parsed_testcase_list = __get_parsed_testsuite_testcases(
         testsuite["testcases"],
@@ -1238,7 +1242,7 @@ def parse_tests(tests_mapping):
             # load testcases of testsuite
             testsuites = tests_mapping["testsuites"]
             for testsuite in testsuites:
-                parsed_testcases = _parse_testsuite(testsuite, project_mapping)
+                parsed_testcases = _parse_testsuite(testsuite, project_mapping)  # 解析测试套件
                 for parsed_testcase in parsed_testcases:
                     testcases.append(parsed_testcase)
 

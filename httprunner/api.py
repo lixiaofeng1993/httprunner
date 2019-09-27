@@ -124,10 +124,8 @@ class HttpRunner(object):
         for testcase in test_suite:
             testcase_name = testcase.config.get("name")
             logger.log_info("Start to run testcase: {}".format(testcase_name))
-
             result = self.unittest_runner.run(testcase)
             tests_results.append((testcase, result))
-
         return tests_results
 
     def _aggregate(self, tests_results):
@@ -188,7 +186,7 @@ class HttpRunner(object):
 
         # add tests to test suite
         self.exception_stage = "add tests to test suite"
-        test_suite = self._add_tests(parsed_testcases)
+        test_suite = self._add_tests(parsed_testcases)  # 添加为unittest框架识别的test_suite
 
         # run test suite
         self.exception_stage = "run test suite"
@@ -196,7 +194,7 @@ class HttpRunner(object):
 
         # aggregate results
         self.exception_stage = "aggregate results"
-        self._summary = self._aggregate(results)
+        self._summary = self._aggregate(results)  # 解析返回结果为正确的json格式
 
         # generate html report
         self.exception_stage = "generate html report"
@@ -204,7 +202,6 @@ class HttpRunner(object):
 
         if self.save_tests:
             utils.dump_logs(self._summary, project_mapping, "summary")
-
         report_path = report.render_html_report(
             self._summary,
             self.report_template,
@@ -257,7 +254,7 @@ class HttpRunner(object):
         # load tests
         self.exception_stage = "load tests"
         tests_mapping = loader.load_tests(path, dot_env_path)
-        tests_mapping["project_mapping"]["test_path"] = path
+        tests_mapping["project_mapping"]["test_path"] = path  # 添加 test_path 属性
 
         if mapping:
             tests_mapping["project_mapping"]["variables"] = mapping
@@ -273,9 +270,9 @@ class HttpRunner(object):
                 dict: valid testcase/testsuite data
 
         """
-        if validator.is_testcase_path(path_or_tests): # 参数 list or str ，判断路径是否存在
+        if validator.is_testcase_path(path_or_tests):  # 参数 list or str ，判断路径是否存在
             return self.run_path(path_or_tests, dot_env_path, mapping)
-        elif validator.is_testcases(path_or_tests):
+        elif validator.is_testcases(path_or_tests):  # 直接传json接口数据
             return self.run_tests(path_or_tests)
         else:
             raise exceptions.ParamsError("Invalid testcase path or testcases: {}".format(path_or_tests))
