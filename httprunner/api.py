@@ -2,9 +2,11 @@
 
 import os
 import unittest
+import time
 
 from httprunner import (__version__, exceptions, loader, logger, parser,
                         report, runner, utils, validator)
+from datetime import datetime
 
 
 class HttpRunner(object):
@@ -18,10 +20,12 @@ class HttpRunner(object):
             report_template (str): 报表模板文件路径，模板应为jinja2格式.
             report_dir (str): html报告保存目录.
             log_level (str): 日志等级.
-            log_file (str): 日志文件路径.
+            log_file (str): 日志文件前缀名称.
 
         """
-        logger.setup_logger(log_level, log_file)  # 调用日志函数，参数 日志等级和日志文件路径
+        log_name_timestamp = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
+        log_file_path = os.path.join(os.getcwd(), 'logs', (log_file + log_name_timestamp + ".log"))
+        logger.setup_logger(log_level, log_file_path)  # 调用日志函数，参数 日志等级和日志文件路径
         logger.log_info("HttpRunner version: {}".format(__version__))
 
         self.exception_stage = "initialize HttpRunner()"
