@@ -11,7 +11,7 @@ from datetime import datetime
 
 class HttpRunner(object):
     def __init__(self, failfast=False, save_tests=False, report_template=None, report_dir=None,
-                 log_level="INFO", log_file=None):
+                 log_level="INFO", log_file=''):
         """ initialize HttpRunner.
 
         Args:
@@ -24,7 +24,9 @@ class HttpRunner(object):
 
         """
         log_name_timestamp = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
-        log_file_path = os.path.join(os.getcwd(), 'logs', (log_file + log_name_timestamp + ".log"))
+        log_path = os.path.join(os.getcwd(), 'logs')
+        if not os.path.exists(log_path): os.mkdir(log_path)  # 创建logs目录
+        log_file_path = os.path.join(log_path, (log_file + log_name_timestamp + ".log"))
         logger.setup_logger(log_level, log_file_path)  # 调用日志函数，参数 日志等级和日志文件路径
         logger.log_info("HttpRunner version: {}".format(__version__))
 
