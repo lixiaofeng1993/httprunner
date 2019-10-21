@@ -55,17 +55,23 @@ def get_summary(result):
         }
     }
     summary["stat"]["successes"] = summary["stat"]["total"] \
-        - summary["stat"]["failures"] \
-        - summary["stat"]["errors"] \
-        - summary["stat"]["skipped"] \
-        - summary["stat"]["expectedFailures"] \
-        - summary["stat"]["unexpectedSuccesses"]
+                                   - summary["stat"]["failures"] \
+                                   - summary["stat"]["errors"] \
+                                   - summary["stat"]["skipped"] \
+                                   - summary["stat"]["expectedFailures"] \
+                                   - summary["stat"]["unexpectedSuccesses"]
 
     summary["time"] = {
         'start_at': result.start_at,
         'duration': result.duration
     }
-    summary["records"] = result.records
+
+    i = 0
+    summary["records"] = []
+    for record in result.records:
+        i += 1
+        record["id"] = i
+        summary["records"].append(record)
 
     return summary
 
@@ -260,7 +266,6 @@ def __get_total_response_time(meta_datas_expanded):
 
 
 def __stringify_meta_datas(meta_datas):
-
     if isinstance(meta_datas, list):
         for _meta_data in meta_datas:
             __stringify_meta_datas(_meta_data)
@@ -319,6 +324,7 @@ class HtmlTestResult(unittest.TextTestResult):
     """ A html result class that can generate formatted html results.
         Used by TextTestRunner.
     """
+
     def __init__(self, stream, descriptions, verbosity):
         super(HtmlTestResult, self).__init__(stream, descriptions, verbosity)
         self.records = []

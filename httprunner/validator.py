@@ -93,9 +93,11 @@ def is_testcases(data_structure):
 
     """
     if not isinstance(data_structure, dict):
+        print(1)
         return False
 
     if "testcases" not in data_structure:
+        print(2)
         return False
 
     testcases = data_structure["testcases"]
